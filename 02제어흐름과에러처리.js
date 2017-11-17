@@ -128,3 +128,129 @@ catch (e) {
     monthName = "unknown";
     logMyErrors(e); // pass exception object to error handler
 }
+
+function openMyFile() {
+  console.log('file 열었다.');
+}
+function writeMyFile(theData) {
+  console.log('파일에 ' + theData + '작성한다.');
+}
+function closeMyFile() {
+  console.log('file 닫았다.');
+}
+function handleError(e) {
+  console.log('에러 처리를 다룬당', e);
+}
+openMyFile();
+try {
+  writeMyFile(theData); //This may throw a error no error 'theData'
+} catch(e) {  
+  handleError(e); // If we got a error we handle it
+} finally {
+  closeMyFile(); // always close the resource
+}
+
+function f() {
+  try {
+    console.log(0);
+    throw "bogus";
+  } catch(e) {
+    console.log(1);
+    return true; // this return statement is suspended
+                 // until finally block has completed
+    console.log(2); // not reachable
+  } finally {
+    console.log(3);
+    return false; // overwrites the previous "return"
+    console.log(4); // not reachable
+  }
+  // "return false" is executed now  
+  console.log(5); // not reachable
+}
+f(); // alerts 0, 1, 3; returns 
+// 에러없이 수행될경우 catch문을 타지만 finally문에서 false를 반환하고 함수를 종료한다.
+
+// javascript를 동작을 잘 이해하면 매우 당연하다. 
+// 안쪽부터 실행할거고 catch문에서 throw e를 만나고 일시 정지했다가 finally false를 반환하고 종료한다.
+function f() {
+  try {
+    throw "bogus";
+  } catch(e) {
+    console.log('caught inner "bogus"');
+    throw e; // this throw statement is suspended until 
+             // finally block has completed
+  } finally {
+    return false; // overwrites the previous "throw"
+  }
+  // "return false" is executed now
+}
+
+// 즉 여기서의 try catch문은 불필요한 문이다.
+try {
+  f();
+} catch(e) {
+  // this is never reached because the throw inside
+  // the catch is overwritten
+  // by the return in finally
+  console.log('caught outer "bogus"');
+}
+// OUTPUT
+// caught inner "bogus"
+
+// true or false로 코드의 흐름을 추적할수 있다.
+function ourCodeMakesAMistake() {
+  return true;
+}
+
+function doSomethingToGetAJavascriptError() {
+  throw new Error('똑바로 하세요')
+}
+
+function doSomethingErrorProne () {
+  console.log(ourCodeMakesAMistake());
+  if (ourCodeMakesAMistake()) {
+    throw (new Error('The message'));
+  } else {
+    doSomethingToGetAJavascriptError();
+  }
+}
+
+try {
+  doSomethingErrorProne();
+}
+catch (e) {
+  console.log(e.name); // logs 'Error'
+  console.log(e.message); // logs 'The message' or a JavaScript error message)
+}
+
+// ES6
+/*
+  pending: 초기상태, fulfilled 되거나 rejected 되지 않음.
+  fulfilled: 연산 수행 성공.
+  rejected: 연산 수행 실패.
+  settled: Promise 가 fulfilled 이거나 rejected 이지만 pending 은 아님.
+*/
+function imgLoad(url) {
+  return new Promise(function(resolve, reject) {
+    var request = new XMLHttpRequest();
+    request.open('GET', url);
+    request.responseType = 'blob';
+    request.onload = function() {
+      if (request.status === 200) {
+        resolve(request.responseURL);
+      } else {
+        reject(Error('Image didn\'t load successfully; error code:' 
+                     + request.statusText));
+      }
+    };
+    request.onerror = function() {
+      reject(Error('There was a network error.'));
+    };
+    console.log('resolveData: ', request);
+    request.send();
+  });
+}
+// 응답이 성공하면 image를 가져오고 request.send();
+// 응답이 실패하면 거절하고
+// 사실 잘 모르겠다 url을 센드하긴 하는데 왜쓰는지는
+// http://han41858.tistory.com/11 이 블로그를 참조하자
