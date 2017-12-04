@@ -306,3 +306,246 @@ re.exec('mambc');   // null
 var re = /oon\b/;
 re.exec('moon');        // ["oon", index: 1, input: "moon"]
 re.exec('moonabc');    // null
+// 단어를 기준으로 끊고 뒤에서부터 대상과 조건이 일치해야 한다.
+
+/*
+    \B
+        단어의 경계가 아닌 곳에 일치합니다. 다시말해, 이 특수문자는 이전 문자와 다음 문자가 같은 타입인 곳에 매치됩니다. 
+        여기서 같은 타입이란 두 문자가 모두 단어이거나, 모두 비 단어(non-word)인 것을 말합니다. 문자열의 시작과 끝은 비 단어로 여겨집니다.
+        예를 들어, /\B../는 "noonday"의 'oo'에 일치하고, /y\B./는 "possibly yesterday."의 'ye'에 일치합니다.
+*/
+var re = /y\B/;
+re.exec('melongy yester'); // ["y", index: 8, input: "melongy yester"]
+re.exec('123 yester');  // ["y", index: 4, input: "123 yester"]
+re.exec('123 !y123');   // ["y", index: 5, input: "123 !y123"]
+re.exec('!@#!@y');  // null
+
+var re = /\Bn/;
+re.exec('noonday'); // ["n", index: 3, input: "noonday"]
+re.exec('aadsfdanadasf');
+re.exec('!@#@!#@!n!@#!@#'); // null
+re.exec(' n '); // null
+re.exec('1232123n');    // ["n", index: 7, input: "1232123n"]
+// 숫자는 단어로 인지한다.
+
+/*
+    \cX
+        X는 A 에서 Z 까지의 문자중 하나입니다. 문자열에서 컨트롤 문자에 일치합니다.
+        예를 들어, /\cM/는 문자열에서 control-M (U+000D)에 일치합니다.        
+*/
+var re = /\cM/
+re.exex('control-M');   // null
+
+/*
+    \d
+        숫자 문자에 일치합니다. [0-9]와 동일합니다. 
+        예를 들어, /\d/ 또는 /[0-9]/는 "B2 is the suite number."에서 '2'에 일치합니다
+*/
+var re = /\d/;
+re.exec('!@#!@#@!#123123');
+
+var re = /[0-9]/;
+re.exec("B2 is the suite number."); // ["2", index: 1, input: "B2 is the suite number."]
+
+/*
+    \D
+        숫자 문자가 아닌 문자에 일치합니다. [^0-9]와 동일합니다.
+        예를 들어, /\D/ 또는 /[^0-9]/는 "B2 is the suite number."의 'B'에 일치합니다.        
+*/
+var re = /\D/;
+re.exec('123213412'); // null
+re.exec('11232132!aa'); // ["!", index: 8, input: "11232132!aa"]
+var re = /[^0-9]/;  // 동치
+
+/*
+    \f: 폼피드 (U+000C) 문자에 일치합니다.
+    \n: 줄 바꿈 (U+000A) 문자에 일치합니다.
+    \r: 캐리지 리턴(U+000D) 문자에 일치합니다.
+    \s
+        스페이스, 탭, 폼피드, 줄 바꿈 문자등을 포함한 하나의 공백 문자에 일치합니다. [ \f\n\r\t\v​\u00a0\u1680​\u180e\u2000​-\u200a​\u2028\u2029\u202f\u205f​\u3000] 와 동일합니다.
+        예를 들어, /\s\w*/ /*는 "foo bar."의 ' bar'에 일치합니다.    
+    \S
+        공백 문자가 아닌 하나의 문자에 일치합니다. [^ \f\n\r\t\v​\u00a0\u1680​\u180e\u2000-\u200a​\u2028\u2029​\u202f\u205f​\u3000] 와 동일합니다.
+        예를 들어, /\S\w*/ /*는 "foo bar."의 'foo' 에 일치합니다.
+    \t: 탭 (U+0009) 문자에 일치합니다.
+    \v: 수직 탭(U+000B) 문자에 일치합니다.
+*/
+
+/*
+    \w
+        밑줄 문자를 포함한 영숫자 문자에 일치합니다. [A-Za-z0-9_] 와 동일합니다.
+        예를 들어, /\w/는 "apple,"의 'a' 에 일치하고, "$5.28,"의 '5'에 일치하고,"3D."의 '3'에 일치합니다.        
+*/
+var re = /\w/;
+re.exec( "apple,"); // ["a", index: 0, input: "apple,"]
+re.exec("$5.28,");  // ["$", index: 0, input: "$5.28,"]
+
+/*
+    \W
+        비 단어 문자에 일치합니다. [^A-Za-z0-9_] 와 동일합니다.
+        예를 들어, /\W/ 또는 /[^A-Za-z0-9_]/는 "50%."의 '%' 에 일치합니다.        
+*/
+var re = /\W/;
+re.exec("50%");     // ["%", index: 2, input: "50%"]
+re.exec("&123123"); // ["&", index: 0, input: "&123123"]
+
+/*
+    \n
+        n이 양의 정수인 곳은, 정규식 안 n번 괄호의 최근 일치 부분의 역참조 입니다. (왼쪽 괄호부터 카운트합니다.)
+        예를 들어, /apple(,)\sorange\1/는 "apple, orange, cherry, peach."의 'apple, orange,' 에 일치합니다.        
+*/
+
+/*
+    \0
+        널 (U+0000)문자에 일치합니다. 
+        다른 숫자가 따라오지 않게 하세요. 
+        왜냐하면 \0<digits>는 8진 이스케이프 시퀀스이기 때문입니다.
+    \xhh: 코드가 hh(두 16진 숫자)인 문자에 일치합니다.
+    \uhhhh: 코드가 hhhh(네개의 16진 숫자)인 문자에 일치합니다.
+*/
+
+function escapeRegExp(string){
+    return string.replace(/[.*+?^${}()<>/>|[\]\\[]/g, "\\$&"); // $&는 일치한 전체 문자열을 의미합니다.
+}
+escapeRegExp("<div>123124</div>");  // "\<div\>123124\<\/div\>"
+
+/*
+    괄호를 사용하기 : 정규식의 어떤 부분을 둘러싼 괄호는 일치한 부분 문자열을 기억
+    일단 기억된다면, 부분 문자열은 패턴화된 부분 문자열 일치 사용하기에서 설명되는것 처럼 다른곳에 사용하기 위하여 호출
+    예를 들면, 패턴 /Chapter (\d+)\.\d*/ 
+    /*는 추가적으로 이스케이프 되거나 특수 문자 를 이용하고, 그 패턴의 부분이 기억될것이라고 나타냅니다. 
+    이 패턴은 잇달아 하나 이상의 숫자(\d는 숫자를 의미하고 +는 1개 이상을 의미합니다.)
+    와 하나의 소숫점(스스로가 특수문자인; \가 앞서는 소숫점은 패턴은 무조건 문자 그대로의 문자 '.' 을 찾아야 한다는 의미입니다), 
+    0개 이상의 숫자(\d 는 숫자, * 0개 이상을 의미합니다.)가 뒤따라오는 'Chapter '문자들에 정확하게 일치합니다. 
+    추가적으로, 괄호는 처음으로 일치하는 숫자를 기억하기 위하여 쓰였습니다.
+*/
+var re = /Chapter (\d+)\.\d*/;
+re.exec("Open Chapter 4.3, paragraph 6");   // ) ["Chapter 4.3", "4", index: 5, input: "Open Chapter 4.3, paragraph 6"]
+re.exec("Open Chapter 4, paragraph 6"); // null
+re.exec("Open Chapter 4, paragraph 6.4");   // null
+
+var re = /(\d+)\.\d*/;
+re.exec("lalalal 66.5");    // ["66.5", "66", index: 8, input: "lalalal 66.5"]
+// .앞의 66을 기억하고 66.5를 출력한다.
+var test = re.exec("lalalal 66.5"); 
+Array.isArray(test);    // true
+test[0];
+test[1];
+test.index;
+test.input;
+
+// 정규식 사용하기: RegExp, test, exec, String, match, replace, search, split
+/*
+    exec: 일치하는 문자열을 찾는 RegExp 메소드
+    test: 일치하는 문자열을 검사하는 RegExp 메소드 true 나 false를 반환
+    match: 일치하는 문자열을 찾는 String 메소드 정보를 가지고 있는 배열을 반환하거나 일치하지 않는 부분을 null
+    search: 일치하는 문자열을 검사하는 String 메소드 일치하는 인덱스를 반환하거나 검색에 실패할 시 -1을 반환
+    replace: 일치하는 문자열을 찾는 String 메소드입니다. 일치하는 문자열을 replacement 로 대체
+    split: 정규표현식 or 고정된 문자열로 대상 문자열을 나누어 배열로 반환하는 String 메서드
+
+    note
+        한 패턴이 어떤 문자열에서 나온 것인지 알고 싶으면, test 나 search 메소드를 사용하는게 좋습니다. 
+        좀더 많은 정보를 원하면 (대신 실행이 느림)  exec 나 match 메소드를 사용하는게 좋습니다. 
+        만약 exec 나 match 메소드를 사용했는데 일치하는 부분이 있으면 이 메소드는 배열을 반환하고 정규식 객체에 관련된 properties나 앞서 정의된 정규식 객체인 RegExp properties를 업데이트 합니다. 
+        만약 일치하지 않으면, exec 메소드는 null 을 반환합니다.(강제로 false 값).    
+*/
+
+var myRe = /d(b+)d/g;
+var myArray = myRe.exec("cdbbdbsbz");  // ["dbbd", "bb", index: 1, input: "cdbbdbsbz"]
+
+var myArray = /d(b+)d/g.exec("cdbbdbsbz");
+
+var myRe = new RegExp("d(b+)d", "g");
+var myArray = myRe.exec("cdbbdbsbz");
+
+var myRe = /d(b+)d/g;
+var myArray = myRe.exec("cdbbdbsbz");
+console.log("The value of lastIndex is " + myRe.lastIndex);             // 5
+
+var myArray = /d(b+)d/g.exec("cdbbdbsbz");
+console.log("The value of lastIndex is " + /d(b+)d/g.lastIndex);        // 0
+// 두 상태의 /d(b+)d/g 어커런스는 다른 정규식 객체이고 이런 이유로 그것의 다른 마지막 위치 속성 값을 갖게 됩니다. 
+// 만약 객체 초기화된 정규식 속성의 접근이 필요하다면, 먼저 변수로 지정해야 합니다.
+// lastIndex를 왜 알아야 하는지는 모르겠으나 변수에 담아서 써라
+myRe.source // "d(b+)d" 정규 표현식의 패턴을 알고 싶다면 source를 통해 파악하자.
+
+// 패턴화된 부분 문자열 일치 사용하기
+// /a(b)c/ 는 'abc' 와 매칭시키고 'b'를 기억
+var re = /(\w+)\s(\w+)/;
+var str = "John Smith";
+var newstr = str.replace(re, "$2, $1");
+console.log(newstr);    // Smith, John
+
+var re = /(\W+)\s(\W+)/;
+var str = "!@#!@# ^&*&";
+var newstr = str.replace(re, "$2, $1");
+
+// 플래그를 사용한 고급검색: 정규식은 전반적이고 대소문자를 구분하지 않는 검색을 따르는 네가지 선택적인 표기 방식
+/*
+    g: Global Search
+    i: Case-insensitive search.
+    m: Multi-line search
+    y: Perform a "sticky" search that matches starting at the current position in the target string.
+
+    var re = /pattern/flags;
+    var re = new RegExp("pattern", "flags");
+*/
+
+// re = /\w+\s/g 는 띄어쓰기 다음에 한개 이상의 문자를 찾는 정규식
+var re = /\w+\s/g;
+var str = "fee fi fo fum";
+var myArray = str.match(re);
+console.log(myArray);           // ["fee ", "fi ", "fo "]
+
+var re = new RegExp("\\w+\\s", "g");
+var str = "fee fi fo fum";
+var myArray = str.match(re);
+console.log(myArray);           // ["fee ", "fi ", "fo "]
+
+// 입력 문자열에서 순서를 변경하기
+var names = "Harry Trump ;Fred Barney; Helen Rigby ; Bill Abel ; Chris Hand ";
+var output = ["---------- Original String\n", names + "\n"];
+console.log('원본: ', output);
+var pattern = /\s*;\s*/;
+var nameList = names.split(pattern);    // ["Harry Trump", "Fred Barney", "Helen Rigby", "Bill Abel", "Chris Hand "]
+
+
+pattern = /(\w+)\s+(\w+)/;
+var bySurnameList = [];
+output.push("---------- After Split by Regular Expression");
+var i, len;
+for (i = 0, len = nameList.length; i < len; i++){
+    output.push(nameList[i]);
+    console.log('first + '+i+' :', nameList[i]);
+    bySurnameList[i] = nameList[i].replace(pattern, "$2, $1");
+    console.log('second + '+i+' :', bySurnameList);
+}
+console.log('split정렬: ', output);
+
+output.push("---------- Names Reversed");
+for (i = 0, len = bySurnameList.length; i < len; i++){
+    output.push(bySurnameList[i]);
+}
+console.log('nameReversed: ', output);
+
+bySurnameList.sort();
+output.push("---------- Sorted");
+for (i = 0, len = bySurnameList.length; i < len; i++){
+  output.push(bySurnameList[i]);
+}
+console.log('알파벳순정렬: ', output);
+
+output.push("---------- End");
+console.log(output.join("\n"));
+
+// 입력을 확인하기 위해 특수 문자를 사용하기
+var re = /(?:\d{3}|\(\d{3}\))([-\/\.])\d{3}\1\d{4}/;  
+function testInfo(str){  
+  var OK = re.exec(str);  
+  if (!OK)  
+    return window.alert(OK + " isn't a phone number with area code!");  
+  else
+    return window.alert("Thanks, your phone number is " + OK[0]);  
+}
+testInfo('010-123-1234');
+testInfo('0101231234'); 
