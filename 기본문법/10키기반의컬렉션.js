@@ -92,12 +92,71 @@ var weekMapTest = (function(){
         privates.set(this, me);
     }
     
-    Public.prototype.method = function () {
+    Public.prototype.get = function () {
         const me = privates.get(this);
         // Do stuff with private data in `me`...
         return me;
     };
 
+    Public.prototype.set = function(obj) {
+        console.log(obj);
+        const me = privates.set(this, obj)
+    }
+
     return new Public();
 })();
-weekMapTest.method();   // 값의 확인만 가능 privates 값을 설정할순 없당.
+weekMapTest.get();   // 값의 확인만 가능 privates 값을 설정할순 없당.
+weekMapTest.set({a:2, b:3, c:4});   // this를 통해 세팅하는 함수를 만들수 있다.
+
+// Sets
+// Set object: Set객체는 값들의 집합이다. 입력된 순서에따라 저장된 요소를 반복처리할 수 있다. Set은 중복된 값을 허용하지 않는다.
+var mySet = new Set();
+mySet.add(1);
+mySet.add("some text");
+mySet.add("foo");
+
+mySet.has(1); // true
+mySet.delete("foo");
+mySet.size; // 2
+
+for (let item of mySet) console.log(item);
+// 배열과 Set의 상호 변환: 
+/*
+    Array.from 혹은 spread operator를 통해 Set객체를 가지고 Array을 생성, 
+    Set 생성자는 배열을 인자로 받을 수 있고 해당 배열을 Set객체의 요소로 저장
+    Set객체는 중복된 값을 저장하지 않기때문에 주어진 배열내의 중복된 요소들을 제거되어 Set으로 변환
+ */
+Array.from(mySet);
+[...mySet2];
+
+mySet2 = new Set([1,2,3,4]);
+
+// 배열과 Set비교
+/*
+    1. indexOf메서드를 사용하여 배열내에 특정 요소가 존재하는지 확인하는 것은 느리다.
+    2. 배열에선 해당 요소를 배열에서 잘라내야 하는 반면 Set객체는 요소의 값으로 해당 요소를 삭제하는 기능 제공
+    3. NaN은 배열에서 indexOf메서드로 찾을 수 없다. 
+    4. Set객체는 값의 유일성을 보장하기 때문에 직접 요소의 중복성을 확인할 필요가 없다.
+*/
+
+// WeakSet 객체: WeakSet객체는 객체를 저장하는 일종의 집합, WeakSet내의 중복된 객체는 없으며 WeakSet내의 요소를 열거할 수는 없다. 
+/*
+    Set과 가장 큰 차이점
+        1. Set과는 다르게 WeakSet은 객체의 집합이며 객체만 저장할 수 있다. 특정 type의 값을 저장할 수는 없다.
+        2. WeakSet은 약한 참조를 가진다. 
+           WeakSet내의 객체에 대한 참조는 약하게 연결이 되어 있다. 
+           WeakSet내에 저장되어 있는 객체에 대한 참조가 없게되면 garbage collection 대상이되어 수거 된다.
+           현재 저장되어 있는 객체에 대한 목록은 없으며 WeakSet은 열거형이 아니다. 
+
+    note: WeakSet객체의 사용 사례는 제한되어 있다. 
+          메모리 누수가 발생되지 않기때문에 안전하게 DOM요소를 키로 저장할 수 있고 예를 들면 추적을 위해 DOM요소들을 WeakSet에 저장할 수 있다. 
+          아직 코드 사례는 못찾아 봤다.
+*/
+
+// Map과 Set의 키와 값의 동치성
+/*
+    Map객체의 key에 대한 동치성 비교와 Set객체의  값에 대한 동치성 비교 모두 "same-value-zero algorithm"에 근거
+        1. 동치성 비교는 === 비교 연산과 같이 작동한다.
+        2. -0과 +0은 같다고 간주한다. 
+        3. NaN는 자기 자신하고 같다고 간주한다. (===와는 반대로)
+*/
