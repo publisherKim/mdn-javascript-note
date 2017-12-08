@@ -343,3 +343,99 @@ validate(test, 10, 11); // 'valid Value'
 */
 
 // 일반적으로 this는 메서드를 호출하는 객체를 지칭. 
+
+/*
+    getters and setters definition
+        getter 메서드는 특정 속성의 값을 받아 오기 위한 메서드 입니다. 
+        setter메서드는 특정 속성의 값을 설정하기 위한 메서드 입니다. 
+        새로운 속성을 추가 하기 위해 getter와 setter 메서드들을 미리 정의된 객체 혹은 사용자 정의 객체에 정의 하 수 있습니다.  
+        getter와 setter메서드들을 정의 하기 위한 문법은 객체 구문 문법을 사용합니다.
+*/
+var o = {
+    a: 7, 
+    get b() {return this.a + 1;}, 
+    set c(x) {this.a = x / 2}
+};
+o.a;
+o.b;
+o.c = 50;
+o.a;
+/*
+    o.a — 숫자
+    o.b — o.a에 1을 더한 값을 반환하는 getter 메서드
+    o.c — o.a에 주어진 인자 값의 반에 해당 하는 값을 설정하는 setter 메서드
+*/
+
+var d = Date.prototype;
+Object.defineProperty(d, "year", {
+    get: function() {return this.getFullYear() },
+    set: function(y) { this.setFullYear(y) }    
+});
+
+var now = new Date;
+now.getFullYear();   // 2017
+now;    // Fri Dec 08 2017 10:40:01 GMT+0900 (대한민국 표준시)
+
+/* 
+    정리: 원칙적으로 getter와 setter메서드들은 아래의 둘중 하나의 방법으로 선언
+        1. object initializers를 사용하여 정의
+        2. getter와 setter메서드 추가 방법을 사용하여 언제든지 특정 객체에 나중에 추가하는 방법
+
+    object initializers 방법을 사용하여 getter와 setter메서드들을 정의할 경우, getter메서드는 get, setter메서드는 set이라는 접두사만 추가하면 됩니다. 
+    물론 getter메서드는 인자를 받지 않는 반면, setter 메서드는 정확히 하나의 인자(설정할 새로운 값)만을 받습니다. 
+*/
+var o = {
+    a: 7,
+    get b() {return this.a + 1},
+    set c(x) {return this.a = x/2;}
+};
+o.a;    // 7
+o.b;    // 8
+o.c = 6;
+o.b;    // 3
+
+/*
+    Object.defineProperties 메서드를 사용하면 객체 생성이후라도 언제든지 getter and setter메서드들을 객체에 추가할 수 있습니다. 
+    Object.defineProperties 메서드의 첫번째 인자는 getter and setter메서드들을 추가할 객체이고, 
+    두번째 인자는 getter and setter메서드들의 이름과 getter and setter메서드들의 정의를 가지고 있는 객체가 되어야 합니다. 
+    이전 예제와 동일하게 사용된 getter and setter메서드들을 정의하고 있는 예제는 아래와 같습니다:
+*/
+var o = { a:0 };
+Object.defineProperties(o, {
+    "b": { get: function () { return this.a + 1; } },
+    "c": { set: function (x) { this.a = x / 2; } }
+});
+o.a;    // 0
+o.c = 10
+o.a;    // 5    =>  a= 10/2
+o.b         // 6;   =>  a = 5 + 1
+
+// 프로퍼티의 삭제: 상속 받지 않은 속성은 delete 연산자를 이용하여 제거 할 수 있다.
+var myobj = new Object;
+myobj.a = 5;
+myobj.b = 12;
+delete myobj.a;
+"a" in myobj;   // false
+
+// var 키워드로 선언하지 않은 전역 변수도 delete를 이용하여 삭제를 할 수 있다
+g = 17;
+delete g;
+
+// 객체 간의 비교: JavaScript 에서는 객체들은 레퍼런스 타입이다. 
+var fruit = {name: "apple"};
+var fruitbear = {name: "apple"};
+fruit == fruitbear  // false
+fruit === fruitbear  // false
+// but
+fruit.name == fruitbear.name    // true
+fruit.name === fruitbear.name    // true
+// 값은 참조가 아니다.
+
+// 두 개의 변수이지만 하나의 객체
+var fruit = {name: "apple"};
+var fruitbear = fruit;  // fruit 객체 레퍼런스를 fruitbear 에 할당
+
+// here fruit and fruitbear are pointing to same object
+fruit == fruitbear // true 리턴
+fruit === fruitbear // true 리턴
+// 동일한 주소지를 바라보면 참조가 아니다.
