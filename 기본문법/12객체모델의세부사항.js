@@ -919,7 +919,8 @@ function Engineer (name, projs, mach, hobby) {
 var inheritTest = function(parentName) {
     return Engineer.prototype = parentName;
 }
-inheritTest('Hobbyist');
+//inheritTest(new Hobbyist);
+inheritTest(new WorkerBee);
 var dennis = new Engineer("Doe, Dennis", ["collabra"], "hugo");
 
 Hobbyist.prototype.equipment = ["mask", "fins", "regulator", "bcd"];
