@@ -68,3 +68,76 @@ gen().next();   // {value: "a", done: false}
 [a, b, c] = new Set(["a", "b", "c"]);   // Set(3) {"a", "b", "c"}
 a;  // "a"
 // new Set을 어디에 쓸지는 아지 파악이안됨.. 반복되는 배열을 중복을 걸러주고 해체 할당을 하는데 쓰이는걸로 추정됨.
+
+/*
+    생성기
+       사용자 정의 반복기는 유용한 도구이지만, 반복기 생성은 명시적으로 그들의 내부 상태를 유지할 필요 때문에 주의깊은 프로그래밍이 필요합니다. 
+       생성기는 강력한 대안을 제공합니다: 
+       자신의 상태를 유지할 수 있는 단일 함수를 작성하여 반복 알고리즘을 정의할 수 있게 합니다.
+
+        생성기는 반복기 팩토리로서 작동하는 특별한 유형의 함수입니다. 
+        함수가 하나 이상의 yield 식을 포함하고 function* 구문을 사용하면 생성기가 됩니다. 
+*/
+function* idMaker(){
+    var index = 0;
+    while(true)
+      yield index++;
+}
+var gen = idMaker();
+gen.next().value;    // 0 
+gen.next().value;    // 1
+gen.next().value;    // 2
+// 제어문은 사실상 쭉 진행 되어져야 하는 제어문을 컨트롤 할수 있다. 이 부분은 좀더 공부를 해야함. 흐름의 제어가 가능해짐
+// https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Operators/yield 참고
+
+/*
+    고급 생성기
+        생성기는 요청에 따라 그 산출된(yielded, yield 식으로 산출된) 값을 계산하고, 
+        계산하기 비싼(힘든) 수열 또는 위에 설명한 대로 무한 수열이라도 효율적으로 나타내게 합니다.
+
+        next() 메서드는 또한 생성기의 내부 상태를 수정하는 데 쓰일 수 있는 값을 받습니다. 
+        next()에 전달되는 값은 생성기가 중단된 마지막 yield 식의 결과로 처리됩니다.
+
+        여기 sequence(수열)을 재시작하기 위해 next(x)를 사용하는 피보나치 생성기가 있습니다:
+*/
+function* fibonacci(){
+    var fn1 = 0;
+    var fn2 = 1;
+    while (true){
+      var current = fn1;
+      fn1 = fn2;
+      fn2 = current + fn1;
+      console.log('fn1 : ', fn1, 'fn2 : ', fn2, 'current : ', current);
+      var reset = yield current;
+      if (reset){
+          fn1 = 0;
+          fn2 = 1;
+          console.log('fn1: ', fn1, 'fn2: ', fn2)
+      }
+    }
+}
+var sequence = fibonacci();
+sequence.next().value;  // fn1 :  1 fn2 :  1 current :  0
+sequence.next().value;  // fn1 :  1 fn2 :  2 current :  1
+sequence.next().value;  // fn1 :  2 fn2 :  3 current :  1
+sequence.next().value;  // fn1 :  3 fn2 :  5 current :  2
+sequence.next().value;  // fn1 :  5 fn2 :  8 current :  3
+sequence.next().value;  // fn1 :  8 fn2 :  13 current :  5
+sequence.next().value;  // fn1 :  13 fn2 :  21 current :  8
+sequence.next(true).value;  // if 문을 타고 fn1:  0 fn2:  1 => while 문으로 진입 fn1 :  1 fn2 :  1 current :  0
+sequence.next().value;  // fn1 :  1 fn2 :  2 current :  1
+sequence.next().value;  // fn1 :  2 fn2 :  3 current :  1
+sequence.next().value;  // fn1 :  3 fn2 :  5 current :  2
+/*
+    note: 
+        next(undefined) 호출은 next() 호출과 같습니다. 
+        그러나, next() 호출할 때 undefined 이외의 값으로 신생 생성기를 시작하면 TypeError 예외가 발생합니다.
+    
+        throw() 메서드를 호출하며 발생해야 할 예외 값을 전달하여 예외를 발생하도록 생성기를 강제할 수 있습니다. 
+        이 예외는 생성기의 현재 중단된 문맥에서 발생됩니다, 마치 현재 중단된 yield가 throw value 문 대신인 것처럼.
+
+        발생한 예외 처리 도중 yield를 만나지 않는 경우, 그
+        뒤 예외는 throw() 호출을 통해 위로 전하며 next()의 후속 호출 결과 done 속성은 true가 됩니다.
+
+        생성기는 주어진 값을 반환하고 생성기 자체를 끝내는 return(value) 메서드가 있습니다.
+*/
