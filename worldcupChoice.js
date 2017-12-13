@@ -122,3 +122,53 @@ function result () {
     ); 
 }
 result();
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var portA = ["러시아", "독일", "브라질", "포르투갈", "아르헨티나", "벨기에", "폴란드", "프랑스"];
+var portB = ["스페인", "페루", "스위스", "잉글랜드", "콜롬비아", "멕시코", "우루과이", "크로아티아"];
+var portC = ["덴마크", "아이슬란드", "코스타리카", "스웨덴", "튀니지", "이집트", "세네갈", "이란"];
+var portD = ["세르비아", "나이지리아", "호주", "일본", "모로코", "파나마", "대한민국", "사우디아라비아"];
+
+function ChoiceWorldCupGroup(arr) {
+    this.portGroup = arr;
+}
+
+ChoiceWorldCupGroup.prototype.shupplePort = function() {
+    for (var i = this.portGroup.length; i; i--){
+        var j = Math.floor(Math.random() * i);
+        var x = this.portGroup[i - 1];
+        this.portGroup[i - 1] = this.portGroup[j];
+        this.portGroup[j] = x;
+    }
+    return this.portGroup
+};
+
+ChoiceWorldCupGroup.prototype.result = function(arr, GroupNum) {
+    var results = {}, charCodeRule = 'A'.charCodeAt(0);
+    arr.map(function(i, index){
+       //  A + 0 = A, A + 1 = B, A + 2 = C... A + 7 = H
+        results[String.fromCharCode(charCodeRule++) + GroupNum] = i; 
+    });
+    return results
+};
+
+var PortAarr = new ChoiceWorldCupGroup(portA);
+var PortBarr = new ChoiceWorldCupGroup(portB);
+var PortCarr = new ChoiceWorldCupGroup(portC);
+var PortDarr = new ChoiceWorldCupGroup(portD);
+
+var choiceA = PortAarr.shupplePort();
+var choiceB = PortBarr.shupplePort();
+var choiceC = PortCarr.shupplePort();
+var choiceD = PortDarr.shupplePort();
+
+var groupA = PortAarr.result(choiceA, 1);
+var groupB = PortBarr.result(choiceB, 2);
+var groupC = PortCarr.result(choiceC, 3);
+var groupD = PortDarr.result(choiceD, 4);
+
+groupA;
+groupB;
+groupC;
+groupD;
+
