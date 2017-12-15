@@ -321,3 +321,220 @@ var obj = {
 // 속성에 연속적으로 접근할 수 있습니다:
 obj.details.color;  // orange
 obj["details"]["size"]; // 12
+
+/*
+    배열 (Arrays)
+        JavaScript에서 배열은 실제로는 객체의 특별한 타입입니다. 
+        (숫자로 나타낸 속성은 자연스럽게 [] 구문만을 사용해서 접근하게 되므로) 일반 객체와 많이 비슷하게 동작하지만, 
+        이 객체는 'length'라는 한가지 마법 속성을 가집니다. 이는 항상 배열에서 가장 큰 인덱스보다 하나 더 큰 값으로 존재합니다.
+
+        배열을 생성하는 예전 방법은 다음과 같습니다:
+*/
+var a = new Array();
+a[0] = "dog";
+a[1] = "cat";
+a[2] = "hen";
+a.length;   // 3
+
+// 한가지 더 편리한 배열 표현 방법은 배열 리터럴을 사용하는 것입니다:
+var a = ["dog", "cat", "hen"];
+a.length;   // 3
+// 배열 리터럴 끝에 콤마(",")를 꼬리로 남겨두는 것은 브라우저마다 다르게 처리하므로 그렇게 하지는 마시기 바랍니다.
+
+// array.length 는 배열에 들어있는 항목의 수를 반드시 반영하지는 않는다는 점을 주의하시기 바랍니다. 다음과 같은 경우를 고려해보겠습니다:
+var a = ["dog", "cat", "hen"];
+a[100] = "fox";
+a.length;   // 101
+// 기억해두세요 - 배열의 length 속성은 최대 인덱스에 하나를 더한 값일 뿐입니다.
+
+// 존재하지 않는 배열 인덱스를 참조하려고하면 다음과 같이 undefined 을 얻게됩니다:
+var a = ["dog", "cat", "hen"];
+a[100] = "fox";
+typeof a[90];   // undefined
+
+// 위의 사항들을 감안하면 배열을 반복문으로 처리할 때 다음과 같은 방법으로 처리하실 수 있을 것입니다:
+for (var i = 0; i < a.length; i++) {
+    // a[i] 로 뭔가를 수행
+}
+// 이 코드는 루프를 반복할 때마다 배열의 length 속성을 찾아보게되므로 약간 비 효율적입니다. 개선책은:
+for (var i = 0, len = a.length; i < len; i++) {
+    // a[i] 로 뭔가를 수행
+}
+
+// 보다 더 좋은 관용적인 코드는:
+for (var i = 0, item; item = a[i]; i++) {
+    // item 으로 뭔가를 수행
+}
+/*
+    여기서 우리는 두개의 변수를 설정합니다. 
+    for 루프 중간 부분의 할당문은 참인지 거짓인지 테스트 하는데, 참으로 밝혀지면, 루프를 계속 돕니다. 
+    i가 루프를 돌 때마다 하나씩 증가하기 때문에 배열의 항목들은 순차적으로 item 변수에 할당됩니다. 
+    "거짓으로 취급되는" 항목 (undefined와 같은 항목)을 발견하면 루프는 멈춥니다.
+
+    이 요령은 "거짓으로 취급되는" 값이 포함되지 않은, 
+    예를 들어 객체의 배열이나 DOM 노드들과 같은 배열에 사용되어야만 합니다. 
+    0을 포함하는 수로 표현된 데이터나 빈 문자열을 포함하는 문자열 데이터에 대하여 반복문을 적용할 경우에는 i, j를 사용하는 관용 코드를 대신 사용해야 합니다.
+*/
+
+// 반복문을 사용하는 또다른 방법은 for...in 루프를 사용하는 것입니다. 누군가가 Array.prototype에 새로운 속성을 추가한 경우, 이 루프에 의해 그 속성도 반복된다는 점을 주의하시기 바랍니다:
+for (var i in a) {
+    // a[i] 으로 뭔가를 수행
+}
+
+// 배열에 어떤 항목을 덧붙이길 원하면 다음과 같이 안전한 방법으로 수행할 수 있는 방법이 있습니다:
+a[a.length] = item;                 // a.push(item); 와 같음
+// a.length는 가장 큰 인덱스의 하나 더 큰 값이기 때문에 배열 끝의 빈 공간에 할당한다는 점을 확신할 수 있습니다.
+
+/* 
+    배열 객체는 다음과 같이 많은 메소드를 사용할 수 있습니다:
+        a.toString(), a.toLocaleString(), a.concat(item, ..), a.join(sep),
+        a.pop(), a.push(item, ..), a.reverse(), a.shift(), a.slice(start, end),
+        a.sort(cmpfn), a.splice(start, delcount, [item]..), a.unshift([item]..)
+
+        concat 해당 배열에 지정한 항목들을 추가한 새로운 배열을 돌려줍니다
+        pop 마지막 항목을 제거한 다음 돌려둡니다
+        push 마지막에 하나 이상의 항목을 추가합니다 (ar[ar.length]와 같이)
+        slice 배열의 일부분을 돌려줍니다
+        sort 비교에 사용할 함수를 따로 지정할 수 있습니다
+        splice 구역을 삭제하거나 항목을 추가해서 배열을 수정할 수 있게합니다
+        unshift 배열의 시작부분에 항목을 붙일 수 있습니다        
+*/
+
+/*
+    함수 (Functions)
+        객체와 마찬가지로, 함수는 JavaScript를 이해하는데 핵심이 되는 컴포넌트입니다. 가장 기본적인 함수의 예는 다음과 같습니다:
+*/
+function add(x, y) {
+    var total = x + y;
+    return total;
+}
+/*
+    이 예는 기본 함수에 대해 알아야 할 모든 것을 보여주고 있습니다. 
+    JavaScript 함수는 0개 이상의 이름이 있는 매개변수를 가질 수 있습니다. 
+    함수의 본체는 원하는 만큼의 문장을 포함할 수 있고 해당 함수에 지역적으로 변수를 보유하도록 선언할 수 있습니다. 
+    return 문은 언제나 값을 돌려주고 함수의 실행을 끝내는데 사용될 수 있습니다. 
+    리턴 문이 없으면 (혹은 값이 없는 리턴이) 사용되면, JavaScript는 undefined을 돌려줍니다.   
+
+    이름 붙여진 매개변수들은 다른 어떤 것보다도 해당 함수가 어떤 함수인지 설명해주는 좋은 역할을 할 수 있습니다. 
+    해당 함수가 원하는 매개변수를 주지않고 함수를 호출할 수 있지만 그럴 경우 해당 변수들은 undefined로 설정됩니다.
+*/
+add();  // NaN reason: undefined + undefined => NaN
+
+// 함수가 기대하는 원래의 매개변수보다 많은 매개변수를 넘겨줄 수도 있습니다:
+add(2, 3, 4);   // 5 reason: 처음의 두 수가 더해집니다. 4는 무시됨
+
+/*
+    이 예는 조금 바보같아보이지만, 
+    함수는 추가적으로 주어진 변수는 해당 함수 내에서 매개변수로 넘겨진 모든 값을 가지고 있는 배열과 비슷한 객체인 arguments로 접근할 수 있습니다. 
+    우리가 원하는만큼 값을 취하는 add 함수를 다시 써보겠습니다:
+*/
+function add() {
+    var sum = 0;
+    for (var i = 0, j = arguments.length; i < j; i++) {
+        sum += arguments[i];
+    }
+    return sum;
+}
+add(2, 3, 4, 5);    // 14
+
+// 하지만 2 + 3 + 4 + 5을 직접쓰는 것보다 더 좋지는 않으니, 평균내는 함수를 만들어 보겠습니다:
+function avg() {
+    var sum = 0;
+    for (var i = 0, j = arguments.length; i < j; i++) {
+        sum += arguments[i];
+    }
+    return sum / arguments.length;
+}
+avg(2, 3, 4, 5); // 3.5
+/*
+    이건 매우 유용합니다만 새로운 문제점도 함께 따라왔습니다. 
+    avg() 함수는 콤마로 구분된 매개변수 목록을 취하지만, 
+    배열의 평균을 내고 싶은 경우라면요? 
+    함수를 다음과 같이 다시 쓰기만 하면 됩니다:
+*/
+function avgArray(arr) {
+    var sum = 0;
+    for (var i = 0, j = arr.length; i < j; i++) {
+        sum += arr[i];
+    }
+    return sum / arr.length;
+}
+avgArray([2, 3, 4, 5]); // 3.5
+/*
+    하지만 우리가 이미 만든 함수를 다시 사용할 수 있다면 좋을 것입니다. 
+    운이 좋게도 JavaScript는 함수 객체라면 모두 가지게 되는 apply() 메소드를 사용해서 임의의 매개변수 배열을 함수에 넘겨줄 수 있습니다.
+*/
+avg.apply(null, [2, 3, 4, 5]);  // 3.5
+/*
+    apply()의 두번째 매개변수는 '매개변수들'로 사용하고자 하는 배열입니다. 
+    첫번째 매개변수는 나중에 설명하도록 하겠습니다. 
+    이는 함수가 역시 객체임을 명확히 해주는 사실입니다.
+*/
+
+// JavaScript는 익명의 함수를 만들 수 있도록 허용하고 있습니다.
+var avg = function() {
+    var sum = 0;
+    for (var i = 0, j = arguments.length; i < j; i++) {
+        sum += arguments[i];
+    }
+    return sum / arguments.length;
+}
+/*
+    이것은 의미적으로 function avg() 형식과 같습니다. 
+    문장의 어느 곳에나 일반적인 방식으로 완전한 함수 정의를 넣을 수 있도록 허용하는 것이기 때문에 매우 강력합니다. 
+    이는 다양한 요령을 부릴 수 있게합니다. 
+    다음 예는 C 의 블록 유효 범위를 적용 시킨 것 처럼 지역 변수를 "숨기는" 요령을 보여줍니다:
+*/
+var a = 1;
+var b = 2;
+(function() {
+    var b = 3;
+    a += b;
+})();
+a;  // 4
+b; // 2
+
+// JavaScript는 재귀적으로 함수를 부를 수 있습니다. 이는 브라우저 DOM 등에서 얻을 수 있는 트리 구조를 다루는데 유용합니다.
+function countChars(elm) {
+    if (elm.nodeType == 3) { // TEXT_NODE
+        return elm.nodeValue.length;
+    }
+    var count = 0;
+    for (var i = 0, child; child = elm.childNodes[i]; i++) {
+        console.log(child);
+        count += countChars(child);
+    }
+    return count;
+}
+countChars(document);   // 45600 <-- 결과는 돔 문서에 따라 달라짐.
+
+/*
+    다음의 예는 익명 함수를 사용함에 있어 잠재적인 문제점을 보여줍니다: 
+    이름이 없으면 어떻게 재귀적으로 부를 수 있을까요? 
+    답은 매개변수의 목록으로서의 역할을 수행함과 동시에 arguments.callee로 불리는 속성을 제공하는 arguments 객체에 나와있습니다. 
+    이는 현재의 함수를 반영하기 때문에 익명 함수도 재귀적으로 부를 수 있게 해줍니다:
+*/
+var charsInBody = (function(elm) {
+    if (elm.nodeType == 3) { // TEXT_NODE
+        return elm.nodeValue.length;
+    }
+    var count = 0;
+    for (var i = 0, child; child = elm.childNodes[i]; i++) {
+        count += arguments.callee(child);
+    }
+    return count;
+})(document.body);  // 43862 <--- 한단계만 내려가도 1138개기 줄어든게 확인됨
+/*
+    arguments.callee는 현재 함수이고 모든 함수는 객체이므로, 
+    같은 함수를 여러번 부르는 동안의 정보를 저장하는데 arguments.callee를 사용할 수 있습니다. 
+    다음의 예는 함수 자체가 몇 번 불렸는지 기억하는 함수 입니다:
+*/
+function counter() {
+    if (!arguments.callee.count) {
+        arguments.callee.count = 0;
+    }
+    return arguments.callee.count++;
+}
+counter();  // 0
+counter();  // 1
+counter();  // 2
